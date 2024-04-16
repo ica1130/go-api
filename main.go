@@ -32,5 +32,8 @@ func createEvent(context *gin.Context) {
 
 	event.ID = 1
 	event.UserID = 1
+
+	event.Save()
+
 	context.JSON(http.StatusCreated, event)
 }

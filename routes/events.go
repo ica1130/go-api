@@ -67,7 +67,7 @@ func updateEvent(context *gin.Context) {
 	}
 
 	var updatedEvent models.Event
-	err = context.ShouldBindJSON(&updatedEvent) //parse the request body into the event struct
+	err = context.ShouldBindJSON(&updatedEvent) //parse the request body into the updated event struct
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -82,4 +82,27 @@ func updateEvent(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"message": "Event updated."})
 
+}
+
+func deleteEvent(context *gin.Context) {
+	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event ID."})
+		return
+	}
+
+	event, err := models.GetEventByID(eventId)
+
+	if err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"error": "Event not found."})
+		return
+	}
+
+	err = event.Delete()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusNoContent, gin.H{"message": "Event deleted."})
 }

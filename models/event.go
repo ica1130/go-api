@@ -11,10 +11,12 @@ type Event struct {
 	Description string    `binding:"required"`
 	Location    string    `binding:"required"`
 	DateTime    time.Time `binding:"required"`
-	UserID      int
+	UserID      int64
 }
 
-func (e Event) Save() error {
+// it very imporant to put a pointer to the Event struct in the Save() method because we want to modify the struct itself and not a copy of the struct
+// if we dont put a pointer to the struct, the struct will be copied and the original struct will not be modified
+func (e *Event) Save() error {
 	query := `
 	INSERT INTO events (name, description, location, dateTime, user_id) 
 	VALUES (?, ?, ?, ?, ?)` // ? is a placeholder for the actual values but they are safe against SQL injection attacks

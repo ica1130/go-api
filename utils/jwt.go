@@ -19,7 +19,7 @@ func GenerateToken(email string, userId int64) (string, error) {
 	return token.SignedString([]byte(secretKey))
 }
 
-func VerifyToken(token string) error {
+func VerifyToken(token string) (int64, error) {
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		//check if the token signing method is of type HMAC
 		// this syntax is called type assertion
@@ -32,22 +32,22 @@ func VerifyToken(token string) error {
 	})
 
 	if err != nil {
-		return errors.New("could not parse token")
+		return 0, errors.New("could not parse token")
 	}
 
 	tokenIsValid := parsedToken.Valid
 
 	if !tokenIsValid {
-		return errors.New("token is not valid")
+		return 0, errors.New("token is not valid")
 	}
 
-	// claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 
-	// if !ok {
-	//	return errors.New("Could not parse claims")
-	// }
+	if !ok {
+		return 0, errors.New("could not parse claims")
+	}
 
 	// email := claims["email"].(string)
-	// userID := claims["userId"].(int64)
-	return nil
+	userID := int64(claims["userId"].(float64))
+	return userID, nil
 }

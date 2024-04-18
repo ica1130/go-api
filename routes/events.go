@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 	"rest-api/models"
 	"rest-api/utils"
@@ -43,7 +42,7 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	err := utils.VerifyToken(token)
+	userId, err := utils.VerifyToken(token)
 
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token."})
@@ -58,8 +57,10 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	fmt.Printf("Event: %+v\n", event)
+	event.UserID = userId
+
 	err = event.Save()
+
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

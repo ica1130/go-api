@@ -37,7 +37,9 @@ func (u User) Save() error {
 	return nil
 }
 
-func (u User) Authenticate() error {
+// it is important to put a pointer to the User struct in the Authenticate() method because we want to modify the struct itself and not a copy of the struct
+// if we dont put a pointer to the struct, the struct will be copied and the original struct will not be modified
+func (u *User) Authenticate() error {
 	query := "SELECT id, password FROM users WHERE email = ?"
 	row := db.DB.QueryRow(query, u.Email)
 

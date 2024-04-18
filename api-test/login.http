@@ -1,6 +1,6 @@
 POST http://localhost:8080/login
 
 {
-    "email": "test3",
-    "password": "test3"
+    "email": "test@example.com",
+    "password": "test"
 }

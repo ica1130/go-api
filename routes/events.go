@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"rest-api/models"
+	"rest-api/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -42,8 +43,15 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
+	err := utils.VerifyToken(token)
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token."})
+		return
+	}
+
 	var event models.Event
-	err := context.ShouldBindJSON(&event) //parse the request body into the event struct
+	err = context.ShouldBindJSON(&event) //parse the request body into the event struct
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

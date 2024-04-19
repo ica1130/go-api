@@ -103,3 +103,21 @@ func (event Event) Delete() error {
 	_, err = stmt.Exec(event.ID)
 	return err
 }
+
+// we dont need a pointer here because we are not modifying the struct itself
+// we are just using the struct to get the ID of the event and the ID of the user
+// then we are inserting the IDs into the registrations table
+func (e Event) Register(userId int64) error {
+	query := "INSERT INTO registrations(event_id, user_id) VALUES (?, ?)"
+	stmt, err := db.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(e.ID, userId)
+
+	return err
+}
